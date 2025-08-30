@@ -3,7 +3,6 @@ import Card from '../components/Card'
 import Loader from '../components/Loader'
 import Notification from '../components/Notification'
 import { useLibrary } from '../hooks/useLibrary.js'
-import '../utils/setupChecker.js' // Load setup checker for debugging
 
 const Library = () => {
   const { library, loading, error, removeManhwa, updateManhwa } = useLibrary()
@@ -145,12 +144,8 @@ const Library = () => {
             {isTableError && (
               <button 
                 onClick={() => {
-                  console.log('🔍 Running database setup check...')
-                  if (window.setupChecker) {
-                    window.setupChecker.checkDatabaseSetup()
-                  } else {
-                    console.log('Setup checker not loaded')
-                  }
+                  console.log('🔍 Check browser console for database errors')
+                  console.log('Make sure you have run the Supabase migration SQL')
                 }}
                 className="btn btn-secondary"
                 style={{ 
