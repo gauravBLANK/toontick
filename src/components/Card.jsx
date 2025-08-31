@@ -11,7 +11,7 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
   const statusOptions = [
     { value: 'completed', label: 'Completed', color: '#10b981' },
     { value: 'reading', label: 'Reading', color: 'var(--accent-color)' },
-    { value: 'planned', label: 'Planned', color: '#8b5cf6' },
+    { value: 'plan_to_read', label: 'Planned', color: '#8b5cf6' },
     { value: 'dropped', label: 'Dropped', color: '#ef4444' }
   ]
 
@@ -64,7 +64,7 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
     if (newStatus === 'completed' && chapters) {
       newProgress = chapters
       setCurrentProgress(chapters)
-    } else if (newStatus === 'planned' || newStatus === 'dropped') {
+    } else if (newStatus === 'plan_to_read' || newStatus === 'dropped') {
       newProgress = 0
       setCurrentProgress(0)
     }
