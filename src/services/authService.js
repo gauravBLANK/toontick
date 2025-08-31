@@ -148,37 +148,9 @@ class AuthService {
 
       const normalizedEmail = email.toLowerCase().trim()
 
-      // First, check if user already exists by attempting to sign in
-      console.log('🔍 Checking if account already exists for:', normalizedEmail)
-      
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: normalizedEmail,
-        password
-      })
-
-      // If sign in succeeds, account exists with this password
-      if (signInData?.user && !signInError) {
-        console.log('⚠️ Account exists and password matches')
-        return {
-          success: false,
-          error: 'An account with this email already exists. You have been logged in instead.',
-          user: signInData.user,
-          session: signInData.session,
-          accountExists: true
-        }
-      }
-
-      // If sign in fails with invalid credentials, account might exist with different password
-      if (signInError?.message?.toLowerCase().includes('invalid login credentials')) {
-        console.log('⚠️ Account exists but password is different')
-        return {
-          success: false,
-          error: 'An account with this email already exists. Please try logging in instead.',
-          user: null,
-          session: null,
-          accountExists: true
-        }
-      }
+      // Note: We'll let Supabase handle duplicate account detection
+      // Supabase signUp returns success even for existing emails (to prevent enumeration)
+      console.log('📝 Attempting to create account for:', normalizedEmail)
 
       // Prepare signup data
       const signUpData = {
@@ -190,37 +162,26 @@ class AuthService {
         }
       }
 
-      console.log('📝 Attempting to create new account for:', normalizedEmail)
-
       // Attempt signup
       const { data, error } = await supabase.auth.signUp(signUpData)
 
       if (error) {
         console.error('Signup error:', error)
-        throw error
-      }
-
-      // Check if this is actually a new user or existing user
-      // Supabase returns success even for existing emails (to prevent enumeration)
-      if (data.user && !data.session) {
-        // No session usually means either:
-        // 1. New user created, needs email confirmation
-        // 2. Existing user, Supabase won't create duplicate
         
-        // Try to determine if this is truly a new account
-        const isNewAccount = data.user.created_at && 
-          (new Date() - new Date(data.user.created_at)) < 5000 // Created within last 5 seconds
-
-        if (!isNewAccount && !data.user.email_confirmed_at) {
-          console.log('⚠️ Likely existing unconfirmed account')
+        // Handle specific error cases
+        if (error.message?.toLowerCase().includes('user already registered') ||
+            error.message?.toLowerCase().includes('email already exists') ||
+            error.message?.toLowerCase().includes('email address already in use')) {
           return {
             success: false,
-            error: 'An account with this email already exists. Please check your email for the confirmation link, or try logging in.',
+            error: 'An account with this email already exists. Please try logging in instead.',
             user: null,
             session: null,
             accountExists: true
           }
         }
+        
+        throw error
       }
 
       console.log('✅ Account creation successful')

@@ -196,50 +196,31 @@ const CreateAccount = () => {
           navigate("/login");
         }, 3000);
       } else {
-        // Handle account already exists case
-        if (result.accountExists) {
-          // If user was logged in (password matched), redirect to home
-          if (result.user && result.session) {
-            showNotification(
-              "You have been logged in with your existing account.",
-              "success"
-            );
-            setTimeout(() => {
-              navigate("/");
-            }, 2000);
-          } else {
-            // Account exists but password didn't match
-            showNotification(
-              result.error ||
-                "An account with this email already exists. Please try logging in instead.",
-              "error"
-            );
-            setTimeout(() => {
-              navigate("/login", { state: { email: formData.email } });
-            }, 3000);
-          }
-        } else {
-          // Handle other Supabase errors with user-friendly messages
-          let errorMessage = result.error || "Failed to create account";
+        // Handle errors
+        let errorMessage = result.error || "Failed to create account";
 
-          // Map common Supabase errors to user-friendly messages
-          if (
-            errorMessage.includes("email_already_exists") ||
-            errorMessage.includes("User already registered")
-          ) {
-            errorMessage =
-              "An account with this email already exists. Please try logging in instead.";
-          } else if (errorMessage.includes("weak_password")) {
-            errorMessage =
-              "Password is too weak. Please choose a stronger password";
-          } else if (errorMessage.includes("invalid_email")) {
-            errorMessage = "Please enter a valid email address";
-          } else if (errorMessage.includes("rate_limit")) {
-            errorMessage = "Too many attempts. Please try again later";
-          }
-
-          showNotification(errorMessage, "error");
+        // Map common Supabase errors to user-friendly messages
+        if (
+          errorMessage.includes("email_already_exists") ||
+          errorMessage.includes("User already registered") ||
+          errorMessage.includes("account with this email already exists")
+        ) {
+          errorMessage =
+            "An account with this email already exists. Please try logging in instead.";
+          // Redirect to login with the email pre-filled
+          setTimeout(() => {
+            navigate("/login", { state: { email: formData.email } });
+          }, 3000);
+        } else if (errorMessage.includes("weak_password")) {
+          errorMessage =
+            "Password is too weak. Please choose a stronger password";
+        } else if (errorMessage.includes("invalid_email")) {
+          errorMessage = "Please enter a valid email address";
+        } else if (errorMessage.includes("rate_limit")) {
+          errorMessage = "Too many attempts. Please try again later";
         }
+
+        showNotification(errorMessage, "error");
       }
     } catch (error) {
       console.error("Registration error:", error);
