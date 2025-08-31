@@ -4,9 +4,13 @@ import Card from '../components/Card'
 import Loader from '../components/Loader'
 import Notification from '../components/Notification'
 import useFetchManhwa from '../hooks/useFetchManhwa'
+import { useLibrary } from '../hooks/useLibrary'
+import { useAuth } from '../hooks/useAuth'
 
 const Home = () => {
   const { manhwa, loading, error, fetchMoreManhwa, isLoadingMore } = useFetchManhwa()
+  const { isAuthenticated } = useAuth()
+  const { addManhwa, library } = useLibrary()
   const [searchQuery, setSearchQuery] = useState('')
   const [notification, setNotification] = useState({ message: '', type: 'success', isVisible: false })
   const [libraryIds, setLibraryIds] = useState(new Set())
@@ -19,12 +23,18 @@ const Home = () => {
 
   useEffect(() => {
     // Load library IDs to filter out from featured
-    const savedLibrary = localStorage.getItem('manhwaLibrary')
-    if (savedLibrary) {
-      const library = JSON.parse(savedLibrary)
-      setLibraryIds(new Set(library.map(item => item.id)))
+    if (isAuthenticated && library) {
+      // For authenticated users, use the library from useLibrary hook
+      setLibraryIds(new Set(library.map(item => item.manhwa_id || item.id)))
+    } else {
+      // For non-authenticated users, use localStorage
+      const savedLibrary = localStorage.getItem('manhwaLibrary')
+      if (savedLibrary) {
+        const localLibrary = JSON.parse(savedLibrary)
+        setLibraryIds(new Set(localLibrary.map(item => item.id)))
+      }
     }
-  }, [])
+  }, [isAuthenticated, library])
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type, isVisible: true })
@@ -34,23 +44,73 @@ const Home = () => {
     setNotification(prev => ({ ...prev, isVisible: false }))
   }
 
-  const handleAddToLibrary = (manhwaItem) => {
-    // Get existing library
-    const existingLibrary = JSON.parse(localStorage.getItem('manhwaLibrary') || '[]')
-    
-    // Check if already in library
-    const isAlreadyInLibrary = existingLibrary.some(item => item.id === manhwaItem.id)
-    
-    if (!isAlreadyInLibrary) {
-      const updatedLibrary = [...existingLibrary, { ...manhwaItem, status: 'reading' }]
-      localStorage.setItem('manhwaLibrary', JSON.stringify(updatedLibrary))
-      
-      // Update library IDs to remove from featured
-      setLibraryIds(prev => new Set([...prev, manhwaItem.id]))
-      
-      showNotification(`${manhwaItem.title} added to your library!`, 'success')
+  const handleAddToLibrary = async (manhwaItem) => {
+    if (isAuthenticated) {
+      // For authenticated users, use the library service
+      try {
+        await addManhwa(manhwaItem)
+        
+        // Update library IDs to remove from featured
+        setLibraryIds(prev => new Set([...prev, manhwaItem.id]))
+        
+        showNotification(`${manhwaItem.title} added to your library!`, 'success')
+      } catch (error) {
+        console.error('Error adding to library:', error)
+        
+        // Handle specific error scenarios
+        if (error.message && error.message.includes('already in your library')) {
+          // Handle duplicate error responses (409 Conflict equivalent)
+          showNotification(`${manhwaItem.title} is already in your library`, 'warning')
+        } else if (error.message && error.message.includes('User must be authenticated')) {
+          // Handle authentication errors
+          showNotification('Please sign in to add manhwa to your library', 'error')
+        } else if (error.message && error.message.includes('Database table')) {
+          // Handle database setup errors
+          showNotification('Library service is not available. Please contact support.', 'error')
+        } else if (error.message && error.message.includes('Permission denied')) {
+          // Handle permission errors
+          showNotification('Permission denied. Please try signing in again.', 'error')
+        } else if (error.message && error.message.includes('Failed to check')) {
+          // Handle database connection issues
+          showNotification('Unable to verify library status. Please check your connection and try again.', 'error')
+        } else {
+          // Handle generic errors
+          const errorMessage = error.message || 'Failed to add to library. Please try again.'
+          showNotification(errorMessage, 'error')
+        }
+      }
     } else {
-      showNotification(`${manhwaItem.title} is already in your library!`, 'warning')
+      // For non-authenticated users, use localStorage fallback with comprehensive duplicate checking
+      try {
+        const existingLibrary = JSON.parse(localStorage.getItem('manhwaLibrary') || '[]')
+        
+        // Enhanced duplicate checking to match backend logic
+        // Check for duplicates by both ID and title
+        const isDuplicateById = existingLibrary.some(item => item.id === manhwaItem.id)
+        const isDuplicateByTitle = existingLibrary.some(item => 
+          item.title && manhwaItem.title && 
+          item.title.toLowerCase().trim() === manhwaItem.title.toLowerCase().trim()
+        )
+        
+        if (isDuplicateById || isDuplicateByTitle) {
+          // Show consistent error message for localStorage duplicate scenarios
+          showNotification(`${manhwaItem.title} is already in your library`, 'warning')
+          return
+        }
+        
+        // Add to localStorage
+        const updatedLibrary = [...existingLibrary, { ...manhwaItem, status: 'reading' }]
+        localStorage.setItem('manhwaLibrary', JSON.stringify(updatedLibrary))
+        
+        // Update library IDs to remove from featured
+        setLibraryIds(prev => new Set([...prev, manhwaItem.id]))
+        
+        showNotification(`${manhwaItem.title} added to your library!`, 'success')
+      } catch (error) {
+        console.error('Error with localStorage operation:', error)
+        // Handle localStorage errors (e.g., storage quota exceeded, JSON parsing errors)
+        showNotification('Failed to add to library. Please try again.', 'error')
+      }
     }
   }
 
