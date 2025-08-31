@@ -275,6 +275,65 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Remove text selection highlighting to prevent black rectangle highlights */
+::selection {
+  background: rgba(61, 122, 245, 0.2); /* Use subtle primary color instead of black */
+  color: var(--text-primary);
+}
+
+::-moz-selection {
+  background: rgba(61, 122, 245, 0.2);
+  color: var(--text-primary);
+}
+
+/* Specifically target filter buttons to prevent text selection highlighting */
+.filter-button {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.filter-button::selection {
+  background: transparent;
+}
+
+.filter-button::-moz-selection {
+  background: transparent;
+}
+
+/* Prevent text selection on all button elements */
+button {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+button::selection {
+  background: transparent;
+}
+
+button::-moz-selection {
+  background: transparent;
+}
+
+/* Prevent text selection on button content including spans and nested elements */
+button * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+button *::selection {
+  background: transparent;
+}
+
+button *::-moz-selection {
+  background: transparent;
+}
+
 /* Featured Manhwa Grid - Mobile First Responsive Design */
 .featured-grid {
   display: grid;
@@ -494,4 +553,44 @@ main.container > section:not(:last-child) {
     padding: 1rem !important; /* Original padding on desktop */
     gap: 1rem !important;
   }
+}/* Library C
+ard Responsive Styles */
+.library-card {
+  /* Base mobile styles are handled inline */
+}
+
+@media (max-width: 639px) {
+  .library-card .card-image-container {
+    width: 100px !important;
+    height: 140px !important;
+  }
+  
+  .library-card .card-title {
+    font-size: 1rem !important;
+  }
+  
+  .library-card {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+    min-height: 160px !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .library-card .card-image-container {
+    width: 110px !important;
+    height: 150px !important;
+  }
+}
+/* Dr
+opdown Z-Index Management */
+/* Ensure cards with open dropdowns appear above other cards */
+.library-card[style*="zIndex: 1001"],
+.featured-card[style*="zIndex: 1001"] {
+  z-index: 1001 !important;
+}
+
+/* Additional dropdown positioning support */
+[style*="position: absolute"][style*="zIndex: 1000"] {
+  z-index: 1000 !important;
 }

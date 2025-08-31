@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Modal from './Modal'
 
 const Card = ({ title, image, status, chapters, averageScore, popularity, year, progress, onRead, onStatusChange, buttonText = "Add to Library", cardType = "library" }) => {
@@ -6,6 +6,7 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
   const [currentProgress, setCurrentProgress] = useState(progress || 0)
   const [showDropdown, setShowDropdown] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
   const statusOptions = [
     { value: 'completed', label: 'Completed', color: '#10b981' },
@@ -13,6 +14,36 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
     { value: 'planned', label: 'Planned', color: '#8b5cf6' },
     { value: 'dropped', label: 'Dropped', color: '#ef4444' }
   ]
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false)
+      }
+    }
+
+    const handleScroll = () => {
+      setShowDropdown(false)
+    }
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setShowDropdown(false)
+      }
+    }
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('scroll', handleScroll, true)
+      document.addEventListener('keydown', handleEscape)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+        document.removeEventListener('scroll', handleScroll, true)
+        document.removeEventListener('keydown', handleEscape)
+      }
+    }
+  }, [showDropdown])
 
   const getStatusColor = (status) => {
     const statusOption = statusOptions.find(opt => opt.value === status?.toLowerCase())
@@ -59,7 +90,8 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
         gap: '0.75rem',
         minHeight: '180px',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        zIndex: showDropdown ? 1001 : 1
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-2px)'
@@ -456,25 +488,35 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
     )
   }
 
-  // Library Card Layout (like the image you showed)
+  // Library Card Layout - Refactored to match Search card style
   return (
     <>
-    <div style={{
+    <div className="library-card" style={{
       backgroundColor: 'var(--bg-card)',
-      border: `2px solid ${getStatusColor(currentStatus)}`,
+      border: '1px solid var(--border-color)',
       borderRadius: 'var(--radius-lg)',
-      padding: '1rem',
+      padding: '0.75rem',
       boxShadow: 'var(--shadow-sm)',
       transition: 'all 0.2s ease',
       cursor: 'pointer',
       display: 'flex',
-      gap: '1rem',
+      gap: '0.75rem',
       minHeight: '180px',
-      position: 'relative'
-    }}>
+      position: 'relative',
+      zIndex: showDropdown ? 1001 : 1
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateY(-2px)'
+      e.currentTarget.style.boxShadow = 'var(--shadow-md)'
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)'
+      e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
+    }}
+    >
       {/* Image Section */}
-      <div style={{
-        width: '140px',
+      <div className="card-image-container" style={{
+        width: '120px',
         height: '160px',
         backgroundColor: 'var(--bg-secondary)',
         borderRadius: 'var(--radius-md)',
@@ -483,7 +525,8 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
         justifyContent: 'center',
         color: 'var(--text-muted)',
         overflow: 'hidden',
-        flexShrink: 0
+        flexShrink: 0,
+        position: 'relative'
       }}>
         {image ? (
           <img src={image} alt={title} style={{
@@ -493,22 +536,33 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
             borderRadius: 'var(--radius-md)'
           }} />
         ) : (
-          <span style={{ fontSize: '0.8rem', textAlign: 'center' }}>No Image</span>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.5 }}>
+              <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+            </svg>
+            <span style={{ fontSize: '0.7rem', textAlign: 'center', opacity: 0.7 }}>No Cover</span>
+          </div>
         )}
+        
+        {/* Status Indicator */}
+        <div style={{
+          position: 'absolute',
+          top: '0.5rem',
+          left: '0.5rem',
+          width: '12px',
+          height: '12px',
+          borderRadius: '50%',
+          backgroundColor: getStatusColor(currentStatus),
+          border: '2px solid var(--bg-card)',
+          zIndex: 1
+        }} />
       </div>
-      
-      {/* Status Indicator */}
-      <div style={{
-        position: 'absolute',
-        top: '1rem',
-        left: '1rem',
-        width: '12px',
-        height: '12px',
-        borderRadius: '50%',
-        backgroundColor: getStatusColor(currentStatus),
-        border: '2px solid var(--bg-card)',
-        zIndex: 1
-      }} />
       
       {/* Content Section */}
       <div style={{
@@ -517,8 +571,39 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
         flexDirection: 'column',
         justifyContent: 'space-between'
       }}>
-        {/* Title and Rating */}
+        {/* Title and Type */}
         <div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            marginBottom: '0.5rem'
+          }}>
+            <span style={{
+              fontSize: '0.7rem',
+              color: 'var(--text-secondary)',
+              textTransform: 'uppercase',
+              fontWeight: '600',
+              letterSpacing: '0.5px'
+            }}>
+              MANHWA
+            </span>
+            <div style={{
+              width: '4px',
+              height: '4px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--text-secondary)'
+            }} />
+            <span style={{
+              fontSize: '0.7rem',
+              color: getStatusColor(currentStatus),
+              textTransform: 'uppercase',
+              fontWeight: '600'
+            }}>
+              {formatStatus(currentStatus)}
+            </span>
+          </div>
+          
           <button
             onClick={() => setIsModalOpen(true)}
             style={{
@@ -530,15 +615,16 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
               textAlign: 'left',
             }}
           >
-            <h3 style={{
-              fontSize: '1.2rem',
-              marginBottom: '0.5rem',
+            <h3 className="card-title" style={{
+              fontSize: '1.1rem',
+              marginBottom: '0.75rem',
               color: 'var(--text-primary)',
               lineHeight: '1.3',
               overflow: 'hidden',
               display: '-webkit-box',
               WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical'
+              WebkitBoxOrient: 'vertical',
+              fontWeight: '600',
             }}
             onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
             onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
@@ -547,18 +633,19 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
             </h3>
           </button>
           
+          {/* Rating and Progress Info */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem',
-            marginBottom: '1rem'
+            gap: '1rem',
+            marginBottom: '0.75rem'
           }}>
             {averageScore && (
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.25rem',
-                color: 'var(--accent-color)',
+                color: '#fbbf24',
                 fontSize: '0.9rem',
                 fontWeight: 'bold'
               }}>
@@ -569,29 +656,45 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
               </div>
             )}
             
-            <span style={{
-              fontSize: '0.8rem',
-              color: 'var(--text-secondary)'
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              color: 'var(--text-secondary)',
+              fontSize: '0.8rem'
             }}>
-              Status: {formatStatus(currentStatus).toUpperCase()}
-            </span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+              </svg>
+              <span>{currentProgress}/{chapters || '?'} chapters</span>
+            </div>
           </div>
         </div>
 
-        {/* Progress Section */}
+        {/* Bottom Section - Progress and Status Controls */}
         <div style={{
           display: 'flex',
-          gap: '1rem',
-          alignItems: 'center'
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+          gap: '0.75rem'
         }}>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontSize: '0.8rem',
+          {/* Progress Input */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.25rem',
+            flex: 1,
+            minWidth: 0
+          }}>
+            <label style={{
+              fontSize: '0.7rem',
               color: 'var(--text-secondary)',
-              marginBottom: '0.25rem'
+              textTransform: 'uppercase',
+              fontWeight: '600',
+              letterSpacing: '0.5px'
             }}>
               Progress
-            </div>
+            </label>
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -664,131 +767,153 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
                   }
                 }}
                 style={{
-                  width: '60px',
-                  padding: '0.25rem',
+                  width: '50px',
+                  padding: '0.375rem 0.5rem',
                   backgroundColor: 'var(--bg-secondary)',
                   border: '1px solid var(--border-color)',
                   borderRadius: 'var(--radius-sm)',
                   color: 'var(--text-primary)',
-                  fontSize: '0.9rem'
+                  fontSize: '0.8rem',
+                  textAlign: 'center'
                 }}
               />
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                / {chapters || 'Ongoing'}
+              <span style={{ 
+                color: 'var(--text-secondary)', 
+                fontSize: '0.8rem',
+                whiteSpace: 'nowrap'
+              }}>
+                / {chapters || '?'}
               </span>
             </div>
           </div>
           
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontSize: '0.8rem',
-              color: 'var(--text-secondary)',
-              marginBottom: '0.25rem'
-            }}>
-              My Status
-            </div>
-            <div style={{ position: 'relative' }}>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setShowDropdown(!showDropdown)
-                }}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  backgroundColor: 'var(--bg-secondary)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: 'var(--radius-sm)',
-                  color: 'var(--text-primary)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '0.9rem'
-                }}
-              >
-                {formatStatus(currentStatus)}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7 10l5 5 5-5z"/>
-                </svg>
-              </button>
-              
-              {showDropdown && (
-                <div style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  right: 0,
-                  backgroundColor: 'var(--bg-card)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: 'var(--radius-md)',
-                  boxShadow: 'var(--shadow-lg)',
-                  zIndex: 10,
-                  marginTop: '0.25rem'
-                }}>
-                  {statusOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleStatusChange(option.value)
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '0.5rem',
-                        border: 'none',
-                        backgroundColor: currentStatus === option.value ? 'var(--bg-secondary)' : 'transparent',
-                        color: 'var(--text-primary)',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        fontSize: '0.9rem'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (currentStatus !== option.value) {
-                          e.target.style.backgroundColor = 'var(--bg-secondary)'
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (currentStatus !== option.value) {
-                          e.target.style.backgroundColor = 'transparent'
-                        }
-                      }}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Delete Button */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        paddingTop: '0.25rem'
-      }}>
-        <button
-          onClick={onRead}
-          style={{
-            background: '#ef4444',
-            border: 'none',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5rem',
-            cursor: 'pointer',
-            color: 'white',
+          {/* Status Dropdown */}
+          <div ref={dropdownRef} style={{
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-          title="Remove from library"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-          </svg>
-        </button>
+            flexDirection: 'column',
+            gap: '0.25rem',
+            flex: 1,
+            minWidth: 0,
+            position: 'relative'
+          }}>
+            <label style={{
+              fontSize: '0.7rem',
+              color: 'var(--text-secondary)',
+              textTransform: 'uppercase',
+              fontWeight: '600',
+              letterSpacing: '0.5px'
+            }}>
+              Status
+            </label>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowDropdown(!showDropdown)
+              }}
+              style={{
+                padding: '0.375rem 0.5rem',
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--radius-sm)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: '0.8rem',
+                minHeight: '32px'
+              }}
+            >
+              <span style={{ 
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>
+                {formatStatus(currentStatus)}
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
+            </button>
+            
+            {showDropdown && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--border-color)',
+                borderRadius: 'var(--radius-md)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                marginTop: '0.25rem',
+                overflow: 'hidden'
+              }}>
+                {statusOptions.map((option, index) => (
+                  <button
+                    key={option.value}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleStatusChange(option.value)
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: 'none',
+                      backgroundColor: currentStatus === option.value ? 'var(--bg-secondary)' : 'transparent',
+                      color: 'var(--text-primary)',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontSize: '0.8rem',
+                      borderTop: index > 0 ? '1px solid var(--border-color)' : 'none',
+                      transition: 'background-color 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (currentStatus !== option.value) {
+                        e.target.style.backgroundColor = 'var(--bg-secondary)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentStatus !== option.value) {
+                        e.target.style.backgroundColor = 'transparent'
+                      }
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Remove Button */}
+          <button
+            onClick={onRead}
+            style={{
+              backgroundColor: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.5rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '32px',
+              minWidth: '32px',
+              flexShrink: 0,
+              transition: 'all 0.2s ease'
+            }}
+            title="Remove from library"
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#dc2626'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#ef4444'}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
+        </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div style={{ display: 'flex', gap: '1.5rem', flexDirection: 'column' }}>

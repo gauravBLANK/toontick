@@ -256,6 +256,7 @@ const Library = () => {
               <button
                 key={filter.key}
                 onClick={() => handleFilterChange(filter.key)}
+                className="filter-button"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -286,8 +287,8 @@ const Library = () => {
               >
                 <span>{filter.label}</span>
                 <span style={{
-                  backgroundColor: activeFilter === filter.key ? 'rgba(255,255,255,0.2)' : 'var(--border-color)',
-                  color: activeFilter === filter.key ? 'white' : 'var(--text-primary)',
+                  backgroundColor: activeFilter === filter.key ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
+                  color: activeFilter === filter.key ? 'white' : 'var(--text-secondary)',
                   padding: '0.125rem 0.5rem',
                   borderRadius: '12px',
                   fontSize: '0.75rem',
@@ -344,10 +345,7 @@ const Library = () => {
           </button>
         </div>
       ) : !loading && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
-          gap: '1rem',
+        <div className="featured-grid" style={{
           alignItems: 'start'
         }}>
           {filteredLibrary.map((item, index) => (
