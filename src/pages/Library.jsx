@@ -83,7 +83,7 @@ const Library = () => {
     const isTableError = error.includes('Failed to fetch library') || error.includes('relation "user_library" does not exist')
     
     return (
-      <div className="container" style={{ padding: '2rem 1rem', textAlign: 'center' }}>
+      <div className="container" style={{ textAlign: 'center' }}>
         <div style={{ color: 'var(--text-secondary)', padding: '2rem' }}>
           <h2 style={{ color: 'var(--text-primary)', marginBottom: '1rem' }}>
             {isTableError ? 'Database Setup Required' : 'Error Loading Library'}
@@ -171,7 +171,7 @@ const Library = () => {
         isVisible={notification.isVisible}
         onClose={hideNotification}
       />
-      <div className="container" style={{ padding: '2rem 1rem' }}>
+      <div className="container">
         <h1 style={{
           fontSize: '2rem',
           marginBottom: '2rem',

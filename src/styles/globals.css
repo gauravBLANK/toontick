@@ -23,7 +23,20 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1rem; /* Mobile base */
+}
+
+/* Responsive container padding system */
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1.5rem; /* Tablet */
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem; /* Desktop */
+  }
 }
 
 .btn {
@@ -53,20 +66,31 @@ body {
 
 .hero-section {
   border-radius: var(--radius-lg);
-  min-height: 400px;
+  min-height: 350px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
-  margin-bottom: 3rem;
+  margin: 0 -1rem 3rem -1rem; /* Negative margin to align with container */
+  padding: 3rem 1rem; /* Maintain visual padding */
   position: relative;
   overflow: hidden;
 }
 
+/* Responsive hero section alignment */
 @media (min-width: 640px) {
   .hero-section {
+    min-height: 400px;
+    margin: 0 -1.5rem 3rem -1.5rem;
+    padding: 3rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-section {
     min-height: 450px;
+    margin: 0 -2rem 3rem -2rem;
+    padding: 3rem 2rem;
   }
 }
 
@@ -121,4 +145,52 @@ body {
   .search-button {
     font-size: 1rem;
   }
+}/*
+ Responsive spacing utilities */
+.section-spacing {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+  .section-spacing {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-spacing {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Featured Manhwa Grid - Mobile First Responsive Design */
+.featured-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr; /* Mobile: single column */
+}
+
+@media (min-width: 640px) {
+  .featured-grid {
+    grid-template-columns: 1fr; /* Tablet: still single column for better readability */
+  }
+}
+
+@media (min-width: 1024px) {
+  .featured-grid {
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); /* Desktop: original layout */
+  }
+}
+
+/* Ensure consistent box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
 }

@@ -122,7 +122,7 @@ const Home = () => {
   }
 
   if (loading) return (
-    <main className="container" style={{ padding: '2rem 1rem' }}>
+    <main className="container">
       <div style={{ textAlign: 'center', padding: '3rem' }}>
         <Loader />
         <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>
@@ -133,7 +133,7 @@ const Home = () => {
   )
   
   if (error) return (
-    <main className="container" style={{ padding: '2rem 1rem' }}>
+    <main className="container">
       <div style={{ textAlign: 'center', padding: '3rem' }}>
         <p style={{ color: '#ef4444', marginBottom: '1rem' }}>Error: {error}</p>
         <button 
@@ -154,7 +154,7 @@ const Home = () => {
         isVisible={notification.isVisible}
         onClose={hideNotification}
       />
-      <main className="container" style={{ padding: '2rem 1rem' }}>
+      <main className="container">
       {/* Hero Section */}
       <section 
         className="hero-section"
@@ -272,11 +272,7 @@ const Home = () => {
           
           return (
             <div>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))',
-                gap: '1rem'
-              }}>
+              <div className="featured-grid">
                 {availableManhwa.slice(0, 8).map((item, index) => (
                   <Card
                     key={item.id || index}

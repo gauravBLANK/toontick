@@ -78,7 +78,7 @@ const Search = () => {
   }
 
   if (error) return (
-    <div className="container" style={{ padding: '2rem 1rem', textAlign: 'center' }}>
+    <div className="container" style={{ textAlign: 'center' }}>
       <div style={{ color: 'var(--text-secondary)', padding: '2rem' }}>
         <p>Error: {error}</p>
         <button 
@@ -100,7 +100,7 @@ const Search = () => {
         isVisible={notification.isVisible}
         onClose={hideNotification}
       />
-      <div className="container" style={{ padding: '2rem 1rem' }}>
+      <div className="container">
       <h1 style={{
         fontSize: '2rem',
         marginBottom: '2rem',
