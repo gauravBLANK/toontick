@@ -101,6 +101,7 @@ const Search = () => {
         onClose={hideNotification}
       />
       <div className="container">
+      <div className="section-spacing">
       <h1 style={{
         fontSize: '2rem',
         marginBottom: '2rem',
@@ -215,10 +216,7 @@ const Search = () => {
       )}
 
       {searchResults.length > 0 && !loading && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))',
-          gap: '1rem',
+        <div className="featured-grid" style={{
           alignItems: 'start'
         }}>
           {searchResults.map((item, index) => (
@@ -248,6 +246,7 @@ const Search = () => {
           <p>Search for manhwa to discover new series to add to your library.</p>
         </div>
       )}
+      </div>
       </div>
     </>
   )

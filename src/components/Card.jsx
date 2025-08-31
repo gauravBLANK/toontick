@@ -47,16 +47,16 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
   if (cardType === "featured") {
     return (
       <>
-      <div style={{
+      <div className="featured-card" style={{
         backgroundColor: 'var(--bg-card)',
         border: '1px solid var(--border-color)',
         borderRadius: 'var(--radius-lg)',
-        padding: '1rem',
+        padding: '0.75rem',
         boxShadow: 'var(--shadow-sm)',
         transition: 'all 0.2s ease',
         cursor: 'pointer',
         display: 'flex',
-        gap: '1rem',
+        gap: '0.75rem',
         minHeight: '180px',
         position: 'relative',
         overflow: 'hidden'
@@ -71,8 +71,8 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
       }}
       >
         {/* Image Section */}
-        <div style={{
-          width: '140px',
+        <div className="card-image-container" style={{
+          width: '120px',
           height: '160px',
           backgroundColor: 'var(--bg-secondary)',
           borderRadius: 'var(--radius-md)',
@@ -159,8 +159,8 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
                 textAlign: 'left',
               }}
             >
-              <h3 style={{
-                fontSize: '1.2rem',
+              <h3 className="card-title" style={{
+                fontSize: '1.1rem',
                 marginBottom: '0.75rem',
                 color: 'var(--text-primary)',
                 lineHeight: '1.3',
@@ -236,12 +236,15 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            gap: '0.5rem'
           }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem'
+              gap: '0.5rem',
+              flex: 1,
+              minWidth: 0
             }}>
               <div style={{
                 display: 'flex',
@@ -259,20 +262,24 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
             
             <button
               onClick={onRead}
-              className="btn btn-primary"
+              className="btn btn-primary add-to-library-btn"
               style={{
-                padding: '0.6rem 1.2rem',
-                fontSize: '0.9rem',
+                padding: '0.5rem 0.75rem',
+                fontSize: '0.8rem',
                 fontWeight: '600',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem'
+                gap: '0.375rem',
+                whiteSpace: 'nowrap',
+                minHeight: '36px',
+                flexShrink: 0
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
               </svg>
-              {buttonText}
+              <span className="btn-text-full">{buttonText}</span>
+              <span className="btn-text-short">Add</span>
             </button>
           </div>
         </div>

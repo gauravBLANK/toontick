@@ -26,12 +26,29 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
   
-  /* Spacing */
+  /* Spacing System - Mobile First */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  
+  /* Section Spacing - Responsive */
+  --section-spacing-y: 1.5rem;
+  --section-spacing-x: 1rem;
+  --section-gap: 2rem;
+  
+  /* Component Spacing */
+  --component-spacing-sm: 0.75rem;
+  --component-spacing-md: 1rem;
+  --component-spacing-lg: 1.5rem;
+  
+  /* Layout Margins */
+  --layout-margin-sm: 0.5rem;
+  --layout-margin-md: 1rem;
+  --layout-margin-lg: 1.5rem;
   
   /* Border Radius */
   --radius-sm: 0.25rem;

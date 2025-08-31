@@ -73,7 +73,7 @@ const Footer = () => {
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        padding: '0.75rem 0',
+        padding: '0.75rem 1rem', /* Add horizontal padding to match container */
         zIndex: 50
       }} className="mobile-nav">
         <Link 
@@ -149,6 +149,19 @@ const Footer = () => {
           @media (max-width: 767px) {
             body {
               padding-bottom: 80px;
+            }
+          }
+          
+          /* Responsive mobile navigation padding to match container system */
+          @media (min-width: 640px) and (max-width: 767px) {
+            .mobile-nav {
+              padding: 0.75rem 1.5rem !important;
+            }
+          }
+          
+          @media (min-width: 1024px) {
+            .mobile-nav {
+              padding: 0.75rem 2rem !important;
             }
           }
         `}

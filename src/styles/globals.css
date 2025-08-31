@@ -71,26 +71,30 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 0 -1rem 3rem -1rem; /* Negative margin to align with container */
-  padding: 3rem 1rem; /* Maintain visual padding */
+  margin: 0 calc(-1 * var(--section-spacing-x)) var(--section-gap) calc(-1 * var(--section-spacing-x));
+  padding: var(--section-spacing-y) var(--section-spacing-x);
   position: relative;
   overflow: hidden;
 }
 
-/* Responsive hero section alignment */
+/* Responsive hero section alignment using CSS custom properties */
 @media (min-width: 640px) {
   .hero-section {
     min-height: 400px;
-    margin: 0 -1.5rem 3rem -1.5rem;
-    padding: 3rem 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .hero-section {
     min-height: 450px;
-    margin: 0 -2rem 3rem -2rem;
-    padding: 3rem 2rem;
+  }
+}
+
+/* Landscape orientation adjustments for hero section */
+@media (max-width: 1023px) and (orientation: landscape) {
+  .hero-section {
+    min-height: 250px;
+    padding: var(--component-spacing-lg) var(--section-spacing-x);
   }
 }
 
@@ -145,25 +149,125 @@ body {
   .search-button {
     font-size: 1rem;
   }
-}/*
- Responsive spacing utilities */
-.section-spacing {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-}
+}/* Responsive Spacing and Margin System */
 
+/* Update CSS custom properties for different screen sizes */
 @media (min-width: 640px) {
-  .section-spacing {
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
+  :root {
+    --section-spacing-y: 2rem;
+    --section-spacing-x: 1.5rem;
+    --section-gap: 2.5rem;
+    --component-spacing-sm: 1rem;
+    --component-spacing-md: 1.25rem;
+    --component-spacing-lg: 2rem;
+    --layout-margin-sm: 0.75rem;
+    --layout-margin-md: 1.25rem;
+    --layout-margin-lg: 2rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .section-spacing {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+  :root {
+    --section-spacing-y: 3rem;
+    --section-spacing-x: 2rem;
+    --section-gap: 3rem;
+    --component-spacing-sm: 1.25rem;
+    --component-spacing-md: 1.5rem;
+    --component-spacing-lg: 2.5rem;
+    --layout-margin-sm: 1rem;
+    --layout-margin-md: 1.5rem;
+    --layout-margin-lg: 2.5rem;
   }
+}
+
+/* Landscape orientation adjustments for mobile */
+@media (max-width: 1023px) and (orientation: landscape) {
+  :root {
+    --section-spacing-y: 1rem;
+    --section-gap: 1.5rem;
+    --component-spacing-sm: 0.5rem;
+    --component-spacing-md: 0.75rem;
+    --component-spacing-lg: 1rem;
+  }
+}
+
+/* Section spacing utilities using CSS custom properties */
+.section-spacing {
+  padding-top: var(--section-spacing-y);
+  padding-bottom: var(--section-spacing-y);
+}
+
+.section-spacing-sm {
+  padding-top: var(--component-spacing-sm);
+  padding-bottom: var(--component-spacing-sm);
+}
+
+.section-spacing-lg {
+  padding-top: var(--component-spacing-lg);
+  padding-bottom: var(--component-spacing-lg);
+}
+
+/* Vertical spacing between sections */
+.section-gap {
+  margin-bottom: var(--section-gap);
+}
+
+.section-gap:last-child {
+  margin-bottom: 0;
+}
+
+/* Component spacing utilities */
+.component-spacing-sm {
+  margin-bottom: var(--component-spacing-sm);
+}
+
+.component-spacing-md {
+  margin-bottom: var(--component-spacing-md);
+}
+
+.component-spacing-lg {
+  margin-bottom: var(--component-spacing-lg);
+}
+
+/* Layout margin utilities */
+.layout-margin-x {
+  margin-left: var(--layout-margin-md);
+  margin-right: var(--layout-margin-md);
+}
+
+.layout-margin-y {
+  margin-top: var(--layout-margin-md);
+  margin-bottom: var(--layout-margin-md);
+}
+
+/* Responsive margin system for different orientations */
+.responsive-margin {
+  margin: var(--layout-margin-sm);
+}
+
+@media (min-width: 640px) {
+  .responsive-margin {
+    margin: var(--layout-margin-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-margin {
+    margin: var(--layout-margin-lg);
+  }
+}
+
+/* Consistent vertical rhythm */
+.vertical-rhythm > * + * {
+  margin-top: var(--component-spacing-md);
+}
+
+.vertical-rhythm-sm > * + * {
+  margin-top: var(--component-spacing-sm);
+}
+
+.vertical-rhythm-lg > * + * {
+  margin-top: var(--component-spacing-lg);
 }
 
 /* Prevent horizontal scroll on mobile */
@@ -174,7 +278,7 @@ html, body {
 /* Featured Manhwa Grid - Mobile First Responsive Design */
 .featured-grid {
   display: grid;
-  gap: 1rem;
+  gap: var(--component-spacing-md);
   grid-template-columns: 1fr; /* Mobile: single column */
 }
 
@@ -193,4 +297,201 @@ html, body {
 /* Ensure consistent box-sizing */
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+/* Additional spacing utilities for consistent component spacing */
+
+/* Button spacing */
+.btn {
+  margin: var(--layout-margin-sm) 0;
+}
+
+.btn + .btn {
+  margin-left: var(--component-spacing-sm);
+}
+
+/* Form element spacing */
+.search-container {
+  margin-bottom: var(--component-spacing-md);
+}
+
+/* Text element spacing */
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: var(--component-spacing-sm);
+}
+
+h1 + *, h2 + *, h3 + *, h4 + *, h5 + *, h6 + * {
+  margin-top: var(--component-spacing-sm);
+}
+
+p {
+  margin-bottom: var(--component-spacing-sm);
+}
+
+/* List spacing */
+ul, ol {
+  margin-bottom: var(--component-spacing-md);
+}
+
+li + li {
+  margin-top: var(--component-spacing-sm);
+}
+
+/* Responsive spacing for different screen orientations */
+@media (max-width: 1023px) and (orientation: landscape) {
+  /* Reduce vertical spacing in landscape mode for better content visibility */
+  .section-spacing {
+    padding-top: calc(var(--section-spacing-y) * 0.75);
+    padding-bottom: calc(var(--section-spacing-y) * 0.75);
+  }
+  
+  .hero-section h1 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    margin-bottom: var(--component-spacing-sm);
+  }
+  
+  .search-container {
+    margin-bottom: var(--component-spacing-sm);
+  }
+}
+
+/* Ensure consistent spacing for main content areas */
+main.container > section:not(:last-child) {
+  margin-bottom: var(--section-gap);
+}
+
+/* Responsive adjustments for very small screens */
+@media (max-width: 374px) {
+  :root {
+    --section-spacing-y: 1rem;
+    --section-gap: 1.5rem;
+    --component-spacing-sm: 0.5rem;
+    --component-spacing-md: 0.75rem;
+    --component-spacing-lg: 1rem;
+  }
+}
+
+/* Responsive adjustments for large screens */
+@media (min-width: 1440px) {
+  :root {
+    --section-spacing-y: 4rem;
+    --section-gap: 4rem;
+    --component-spacing-lg: 3rem;
+  }
+}
+
+/* Add to Library Button Responsive Styling */
+.add-to-library-btn {
+  /* Mobile-first: smaller, more compact button */
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.8rem !important;
+  min-height: 36px !important;
+}
+
+.btn-text-full {
+  display: none; /* Hidden on mobile by default */
+}
+
+.btn-text-short {
+  display: inline; /* Shown on mobile by default */
+}
+
+/* Tablet and larger: show full text */
+@media (min-width: 640px) {
+  .add-to-library-btn {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .btn-text-full {
+    display: inline;
+  }
+  
+  .btn-text-short {
+    display: none;
+  }
+}
+
+/* Desktop: full button styling */
+@media (min-width: 1024px) {
+  .add-to-library-btn {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Ensure button doesn't grow too large and maintains proper alignment */
+.add-to-library-btn {
+  max-width: 140px;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .add-to-library-btn {
+    max-width: 160px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .add-to-library-btn {
+    max-width: 180px;
+  }
+}
+
+/* Card Title Responsive Styling */
+.card-title {
+  font-size: 1rem !important; /* Smaller on mobile */
+}
+
+@media (min-width: 640px) {
+  .card-title {
+    font-size: 1.1rem !important; /* Medium on tablet */
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-title {
+    font-size: 1.2rem !important; /* Original size on desktop */
+  }
+}
+
+/* Card Image Container Responsive Styling */
+.card-image-container {
+  width: 100px !important; /* Smaller on mobile */
+  height: 140px !important;
+}
+
+@media (min-width: 640px) {
+  .card-image-container {
+    width: 120px !important; /* Medium on tablet */
+    height: 160px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-image-container {
+    width: 140px !important; /* Original size on desktop */
+    height: 160px !important;
+  }
+}
+
+/* Featured Card Responsive Styling */
+.featured-card {
+  padding: 0.75rem !important; /* Tighter padding on mobile */
+  gap: 0.75rem !important;
+}
+
+@media (min-width: 640px) {
+  .featured-card {
+    padding: 0.875rem !important; /* Medium padding on tablet */
+    gap: 0.875rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .featured-card {
+    padding: 1rem !important; /* Original padding on desktop */
+    gap: 1rem !important;
+  }
 }
