@@ -8,6 +8,13 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const dropdownRef = useRef(null)
 
+  // Close dropdown when modal opens
+  useEffect(() => {
+    if (isModalOpen) {
+      setShowDropdown(false)
+    }
+  }, [isModalOpen])
+
   const statusOptions = [
     { value: 'completed', label: 'Completed', color: '#10b981' },
     { value: 'reading', label: 'Reading', color: 'var(--accent-color)' },
@@ -604,34 +611,19 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
             </span>
           </div>
           
-          <button
-            onClick={() => setIsModalOpen(true)}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              margin: 0,
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
-          >
-            <h3 className="card-title" style={{
-              fontSize: '1.1rem',
-              marginBottom: '0.75rem',
-              color: 'var(--text-primary)',
-              lineHeight: '1.3',
-              overflow: 'hidden',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              fontWeight: '600',
-            }}
-            onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-            onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
-            >
-              {title}
-            </h3>
-          </button>
+          <h3 className="card-title" style={{
+            fontSize: '1.1rem',
+            marginBottom: '0.75rem',
+            color: 'var(--text-primary)',
+            lineHeight: '1.3',
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            fontWeight: '600',
+          }}>
+            {title}
+          </h3>
           
           {/* Rating and Progress Info */}
           <div style={{
@@ -915,211 +907,7 @@ const Card = ({ title, image, status, chapters, averageScore, popularity, year, 
           </button>
         </div>
       </div>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div style={{ display: 'flex', gap: '1.5rem', flexDirection: 'column' }}>
-          {/* Image and Title Section */}
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-            <div style={{
-              width: '120px',
-              height: '180px',
-              borderRadius: 'var(--radius-lg)',
-              overflow: 'hidden',
-              boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
-              flexShrink: 0
-            }}>
-              {image ? (
-                <img 
-                  src={image} 
-                  alt={title} 
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'cover' 
-                  }} 
-                />
-              ) : (
-                <div style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'var(--bg-secondary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--text-secondary)'
-                }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                  </svg>
-                </div>
-              )}
-            </div>
-            
-            <div style={{ flex: 1 }}>
-              {/* Title */}
-              <h1 style={{
-                fontSize: '1.5rem',
-                fontWeight: 'bold',
-                color: 'var(--text-primary)',
-                marginBottom: '0.75rem',
-                lineHeight: '1.2'
-              }}>
-                {title}
-              </h1>
-              
-              {/* Info Grid */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'auto 1fr',
-                gap: '0.25rem 0.75rem',
-                fontSize: '0.9rem'
-              }}>
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Type:</span>
-                <span style={{ color: 'var(--text-primary)' }}>MANHWA</span>
-                
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Status:</span>
-                <span style={{ color: 'var(--text-primary)' }}>
-                  {currentStatus ? formatStatus(currentStatus).toUpperCase() : 'ONGOING'}
-                </span>
-                
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Year:</span>
-                <span style={{ color: 'var(--text-primary)' }}>{year || '2024'}</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Synopsis Section */}
-          <div>
-            <h2 style={{
-              fontSize: '1.1rem',
-              fontWeight: 'bold',
-              color: 'var(--text-primary)',
-              marginBottom: '0.75rem'
-            }}>
-              Synopsis
-            </h2>
-            <p style={{
-              color: 'var(--text-primary)',
-              lineHeight: '1.5',
-              fontSize: '0.9rem',
-              marginBottom: '0.75rem'
-            }}>
-              {title} follows an engaging story filled with adventure, drama, and compelling characters. 
-              This manhwa explores themes of growth, friendship, and overcoming challenges in a beautifully 
-              illustrated world. With its unique art style and captivating storyline, readers are drawn into 
-              a narrative that combines action with emotional depth.
-              {chapters && ` With ${chapters} chapters available, there's plenty of content to explore.`}
-              {averageScore && ` Rated ${(averageScore / 10).toFixed(1)}/10 by readers.`}
-            </p>
-            
-            <p style={{
-              color: 'var(--text-secondary)',
-              fontSize: '0.8rem',
-              fontStyle: 'italic'
-            }}>
-              (Source: AniList)
-            </p>
-          </div>
-          
-          {/* Progress Information for Library Items */}
-          {currentStatus && (
-            <div style={{
-              backgroundColor: 'var(--bg-secondary)',
-              padding: '1rem',
-              borderRadius: 'var(--radius-md)'
-            }}>
-              <h3 style={{
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                color: 'var(--text-primary)',
-                marginBottom: '0.75rem'
-              }}>
-                Your Progress
-              </h3>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '0.5rem'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}>
-                  <div style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: getStatusColor(currentStatus)
-                  }} />
-                  <span style={{
-                    color: 'var(--text-primary)',
-                    fontWeight: '600',
-                    fontSize: '0.9rem'
-                  }}>
-                    {formatStatus(currentStatus)}
-                  </span>
-                </div>
-                <span style={{
-                  color: 'var(--text-primary)',
-                  fontWeight: '600',
-                  fontSize: '0.9rem'
-                }}>
-                  {currentProgress} / {chapters || 'Ongoing'} chapters
-                </span>
-              </div>
-              <div style={{
-                width: '100%',
-                height: '8px',
-                backgroundColor: 'var(--border-color)',
-                borderRadius: 'var(--radius-full)',
-                overflow: 'hidden'
-              }}>
-                <div style={{
-                  width: `${chapters ? (currentProgress / chapters) * 100 : 0}%`,
-                  height: '100%',
-                  backgroundColor: getStatusColor(currentStatus),
-                  transition: 'width 0.3s ease'
-                }} />
-              </div>
-            </div>
-          )}
-          
-          {/* Action Buttons */}
-          <div style={{
-            display: 'flex',
-            gap: '0.75rem',
-            flexWrap: 'wrap'
-          }}>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              style={{
-                backgroundColor: 'transparent',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-md)',
-                padding: '0.75rem 1.5rem',
-                fontSize: '0.9rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = 'var(--bg-secondary)'
-                e.target.style.color = 'var(--text-primary)'
-                e.target.style.borderColor = 'var(--text-secondary)'
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'transparent'
-                e.target.style.color = 'var(--text-secondary)'
-                e.target.style.borderColor = 'var(--border-color)'
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </Modal>
+
     </div>
     </>
   )
