@@ -83,12 +83,17 @@ const Navbar = () => {
         <Link to="/" style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.75rem',
+          gap: '0.5rem',
           textDecoration: 'none',
           color: 'var(--text-primary)'
         }}>
           <svg 
-            style={{ height: '2rem', width: '2rem', color: 'white' }}
+            style={{ 
+              height: '1.75rem', 
+              width: '1.75rem', 
+              color: 'white',
+              flexShrink: 0
+            }}
             xmlns="http://www.w3.org/2000/svg" 
             fill="none" 
             viewBox="0 0 24 24" 
@@ -103,7 +108,9 @@ const Navbar = () => {
           </svg>
           <h2 style={{
             fontSize: '1.25rem',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            margin: 0,
+            lineHeight: 1
           }}>
             ToonTick
           </h2>
