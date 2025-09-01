@@ -194,7 +194,7 @@ const Home = () => {
 
 
 
-      <section className="section-spacing">
+      <section style={{ paddingTop: '0', paddingBottom: 'var(--section-spacing-y)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
           <h2 style={{ 
             fontSize: '1.5rem',
